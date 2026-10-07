@@ -25,13 +25,20 @@ namespace Study3D.MiniGolf
             mainCam = Camera.main;
         }
         
+        private void OnEnable()
+        {
+            chargeTime = 0f;
+            power01 = 0f;
+        }
+
         private void Update()
         {
             Vector3 aimDirection = mainCam.transform.forward;
             aimDirection.y = 0.0f;
             aimDirection.Normalize();
 
-            bool canShoot = ball.IsStopped;
+            bool canShoot = ball.IsStopped &&
+                (GolfRoundFlow.Instance == null || GolfRoundFlow.Instance.CanPlay);
 
             if (canShoot)
             {
@@ -45,6 +52,7 @@ namespace Study3D.MiniGolf
                 {
                     float power = Mathf.Lerp(minPower, maxPower, power01);
                     ball.Shoot(aimDirection, power);
+                    GolfRoundFlow.Instance?.RecordShot();
                     chargeTime = 0.0f;
                     power01 = 0.0f;
                 }
